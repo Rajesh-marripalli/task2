@@ -6,6 +6,7 @@ import com.marketsim.task.entity.Product;
 import com.marketsim.task.exceptions.ProductServiceException;
 import com.marketsim.task.model.request.ProductUpdateRequest;
 import com.marketsim.task.model.request.SearchRequest;
+import com.marketsim.task.model.response.GetProductsResponse;
 import com.marketsim.task.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,14 +23,15 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
+
     @GetMapping("/get-products")
-    public ResponseEntity<ApiResponse<String>> getProducts() {
+    public ResponseEntity<GetProductsResponse> getProducts() {
         try {
             productService.fetchAndSaveProducts();
-            ApiResponse<String> response = new ApiResponse<>(HttpStatus.OK.value(), AppConstants.PRODUCTS_FETCH_SUCCESS, true, null);
+            GetProductsResponse response = new GetProductsResponse(HttpStatus.OK.value(), AppConstants.PRODUCTS_FETCH_SUCCESS, true);
             return ResponseEntity.ok(response);
         } catch (ProductServiceException e) {
-            ApiResponse<String> response = new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), AppConstants.PRODUCTS_FETCH_FAILURE + e.getMessage(), false, null);
+            GetProductsResponse response = new GetProductsResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), AppConstants.PRODUCTS_FETCH_FAILURE + e.getMessage(), false);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -75,30 +77,39 @@ public class ProductController {
     }
 
     @PostMapping("/delete-by-category")
-    public ResponseEntity<ApiResponse<String>> deleteProductsByCategory(@Valid @RequestBody SearchRequest searchRequest) {
+    public ResponseEntity<GetProductsResponse> deleteProductsByCategory(@Valid @RequestBody SearchRequest searchRequest) {
         try {
             if (searchRequest.getQuery() == null || searchRequest.getQuery().isEmpty()) {
-                ApiResponse<String> response = new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), AppConstants.INVALID_SEARCH_QUERY, false, null);
+                GetProductsResponse response = new GetProductsResponse(HttpStatus.BAD_REQUEST.value(), AppConstants.INVALID_SEARCH_QUERY, false);
                 return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
             }
+
+            boolean categoryExists = productService.doesCategoryExist(searchRequest.getQuery());
+            if (!categoryExists) {
+                GetProductsResponse response = new GetProductsResponse(HttpStatus.NOT_FOUND.value(), AppConstants.PRODUCTS_CATEGORY_NOT_FOUND, false);
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+
             productService.deleteProductsByCategory(searchRequest.getQuery());
-            ApiResponse<String> response = new ApiResponse<>(HttpStatus.OK.value(), AppConstants.PRODUCTS_CATEGORY_DELETE_SUCCESS, true, null);
+            GetProductsResponse response = new GetProductsResponse(HttpStatus.OK.value(), AppConstants.PRODUCTS_CATEGORY_DELETE_SUCCESS, true);
             return ResponseEntity.ok(response);
         } catch (ProductServiceException e) {
-            ApiResponse<String> response = new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), AppConstants.PRODUCTS_CATEGORY_DELETE_FAILURE + e.getMessage(), false, null);
+            GetProductsResponse response = new GetProductsResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), AppConstants.PRODUCTS_CATEGORY_DELETE_FAILURE + e.getMessage(), false);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+
     @PostMapping("/update-product")
-    public ResponseEntity<ApiResponse<String>> updateProductById(@Valid @RequestBody ProductUpdateRequest updateRequest) {
+    public ResponseEntity<GetProductsResponse> updateProductById(@Valid @RequestBody ProductUpdateRequest updateRequest) {
         try {
             productService.updateProductById(updateRequest);
-            ApiResponse<String> response = new ApiResponse<>(HttpStatus.OK.value(), AppConstants.PRODUCT_UPDATE_SUCCESS, true, null);
+            GetProductsResponse response = new GetProductsResponse(HttpStatus.OK.value(), AppConstants.PRODUCT_UPDATE_SUCCESS, true);
             return ResponseEntity.ok(response);
         } catch (ProductServiceException e) {
-            ApiResponse<String> response = new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), AppConstants.PRODUCT_UPDATE_FAILURE + e.getMessage(), false, null);
+            GetProductsResponse response = new GetProductsResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), AppConstants.PRODUCT_UPDATE_FAILURE + e.getMessage(), false);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 }

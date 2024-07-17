@@ -69,15 +69,23 @@ public class ProductService {
             throw new ProductServiceException(AppConstants.PRODUCTS_CATEGORY_DELETE_FAILURE + e.getMessage(), e);
         }
     }
+    public boolean doesCategoryExist(String query) {
+        return productRepository.countByCategory(query) > 0;
+    }
 
     public void updateProductById(ProductUpdateRequest productUpdateRequest) {
         try {
             Product product = productRepository.findById(productUpdateRequest.getId())
-                    .orElseThrow(() -> new ProductServiceException("Product not found with ID: " + productUpdateRequest.getId()));
+                    .orElseThrow(() -> new ProductServiceException(AppConstants.Product_not_found_with_ID + productUpdateRequest.getId()));
+            if (product.getTitle().equals(productUpdateRequest.getTitle())) {
+                throw new ProductServiceException(AppConstants.Same_title_available);
+            }
             product.setTitle(productUpdateRequest.getTitle());
             productRepository.save(product);
         } catch (Exception e) {
-            throw new ProductServiceException(AppConstants.PRODUCT_UPDATE_FAILURE + e.getMessage(), e);
+            throw new ProductServiceException(e.getMessage(), e);
         }
     }
+
+
 }

@@ -15,10 +15,6 @@ import java.util.List;
         @Query("SELECT p FROM Product p WHERE LOWER(p.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
                 "LOWER(p.description) LIKE LOWER(CONCAT('%', :query, '%'))")
         List<Product> searchProducts(@Param("query") String query);
-//jpql
-  /*  @Query("SELECT p  from Product p WHERE "+
-    "Lower(p.title) Like Lower(CONCAT('%',:keyword,'%')) OR" +
-    List<Product>searchProducts(String keyword);*/
 
     @Query("SELECT p FROM Product p WHERE LOWER(p.category) LIKE LOWER(CONCAT('%', :category, '%'))")
     List<Product> findByCategory(@Param("category") String category);
@@ -27,6 +23,11 @@ import java.util.List;
     @Modifying
     @Query("DELETE FROM Product p WHERE LOWER(p.category) = LOWER(:category)")
     void deleteByCategory(@Param("category") String category);
+
+    @Query("SELECT COUNT(p) FROM Product p WHERE p.category = :category")
+    long countByCategory(@Param("category") String category);
+
+
 
     }
 

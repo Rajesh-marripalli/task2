@@ -35,13 +35,11 @@ public class Product {
     @ElementCollection
     private List<String> images;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "product_id")
-    private List<Review> reviews;
-
     @Embedded
     private Dimensions dimensions;
 
-    // Getters and Setters
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "product_id")
+    private List<Review> reviews;
 
 }
