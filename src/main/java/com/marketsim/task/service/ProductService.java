@@ -26,26 +26,28 @@ public class ProductService {
     @Value("${product.api.url}")
     private String productApiUrl;
 
-    public void fetchAndSaveProducts()
-    {
+    public void fetchAndSaveProducts() {
         try {
-            ResponseEntity<ProductResponse> response = restTemplate.getForEntity(productApiUrl, ProductResponse.class);
 
-            if (response.getStatusCode().is2xxSuccessful()) {
-                ProductResponse productResponse = response.getBody();
-                if (productResponse != null && productResponse.getProducts() != null) {
-                    List<Product> products = productResponse.getProducts();
-                    productRepository.saveAll(products);
-                } else {
-                    throw new ProductServiceException(AppConstants.INVALID_RESPONSE_BODY);
-                }
-            } else {
+            ResponseEntity<ProductResponse> response = restTemplate.getForEntity(productApiUrl, ProductResponse.class);
+          //checking status code
+            if (!response.getStatusCode().is2xxSuccessful()) {
                 throw new ProductServiceException(AppConstants.FETCH_PRODUCTS_ERROR + response.getStatusCode());
             }
+            //handling response body
+            ProductResponse productResponse = response.getBody();
+            if (productResponse == null || productResponse.getProducts() == null) {
+                throw new ProductServiceException(AppConstants.INVALID_RESPONSE_BODY);
+            }
+            //getting products from product response object
+            List<Product> products = productResponse.getProducts();
+            productRepository.saveAll(products);
         } catch (Exception e) {
             throw new ProductServiceException(AppConstants.UNEXPECTED_ERROR + e.getMessage(), e);
         }
     }
+
+
     public List<Product> searchProducts(String query) {
         try {
             return productRepository.searchProducts(query);

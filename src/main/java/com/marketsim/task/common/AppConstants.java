@@ -18,7 +18,7 @@ public class AppConstants {
             public static final String PRODUCT_UPDATE_FAILURE = "Failed to update product: ";
             public static final String Product_not_found_with_ID = "Product_not_found_with_ID:";
 
-            public static final String PRODUCTS_CATEGORY_NOT_FOUND="PRODUCTS_CATEGORY_NOT_FOUND";
+            public static final String PRODUCTS_CATEGORY_NOT_FOUND="PRODUCTS_NOT_FOUND";
             public static final String Same_title_available= "Same_title_available";
         }
 

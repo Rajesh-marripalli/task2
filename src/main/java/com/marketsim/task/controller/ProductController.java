@@ -1,6 +1,6 @@
 package com.marketsim.task.controller;
 
-import com.marketsim.task.common.ApiResponse;
+import com.marketsim.task.model.response.ApiResponse;
 import com.marketsim.task.common.AppConstants;
 import com.marketsim.task.entity.Product;
 import com.marketsim.task.exceptions.ProductServiceException;

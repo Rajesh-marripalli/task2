@@ -1,6 +1,6 @@
 package com.marketsim.task.exceptions;
 
-import com.marketsim.task.common.ApiResponse;
+import com.marketsim.task.model.response.ApiResponse;
 import com.marketsim.task.common.AppConstants;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
