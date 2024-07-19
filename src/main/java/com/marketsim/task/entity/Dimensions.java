@@ -9,7 +9,5 @@ import lombok.Data;
         private double width;
         private double height;
         private double depth;
-
-
     }
 

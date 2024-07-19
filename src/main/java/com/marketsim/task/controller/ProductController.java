@@ -39,11 +39,11 @@ public class ProductController {
     @PostMapping("/search-products")
     public ResponseEntity<ApiResponse<List<Product>>> searchProducts(@Valid @RequestBody SearchRequest searchRequest) {
         try {
-            if (searchRequest.getQuery() == null || searchRequest.getQuery().isEmpty()) {
+            if (searchRequest.getQuery() == null || searchRequest.getQuery().trim().isEmpty()) {
                 ApiResponse<List<Product>> response = new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), AppConstants.INVALID_SEARCH_QUERY, false, null);
                 return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
             }
-            List<Product> products = productService.searchProducts(searchRequest.getQuery());
+            List<Product> products = productService.searchProducts(searchRequest.getQuery().trim());
             if (products.isEmpty()) {
                 ApiResponse<List<Product>> response = new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "No products available", false, null);
                 return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
@@ -59,15 +59,17 @@ public class ProductController {
     @PostMapping("/search-by-category")
     public ResponseEntity<ApiResponse<List<Product>>> searchProductsByCategory(@Valid @RequestBody SearchRequest searchRequest) {
         try {
-            if (searchRequest.getQuery() == null || searchRequest.getQuery().isEmpty()) {
+            if (searchRequest.getQuery() == null || searchRequest.getQuery().trim().isEmpty()) {
                 ApiResponse<List<Product>> response = new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), AppConstants.INVALID_SEARCH_QUERY, false, null);
                 return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
             }
-            List<Product> products = productService.searchProductsByCategory(searchRequest.getQuery());
+            List<Product> products = productService.searchProductsByCategory(searchRequest.getQuery().trim());
+            //if we are getting empty products
             if (products.isEmpty()) {
                 ApiResponse<List<Product>> response = new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "No products available", false, null);
                 return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
             }
+
             ApiResponse<List<Product>> response = new ApiResponse<>(HttpStatus.OK.value(), "Products found", true, products);
             return ResponseEntity.ok(response);
         } catch (ProductServiceException e) {
@@ -75,11 +77,10 @@ public class ProductController {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    @PostMapping("/delete-by-category")
+@PostMapping("delete-by-category")
     public ResponseEntity<GetProductsResponse> deleteProductsByCategory(@Valid @RequestBody SearchRequest searchRequest) {
         try {
-            if (searchRequest.getQuery() == null || searchRequest.getQuery().isEmpty()) {
+            if (searchRequest.getQuery() == null || searchRequest.getQuery().trim().isEmpty()) {
                 GetProductsResponse response = new GetProductsResponse(HttpStatus.BAD_REQUEST.value(), AppConstants.INVALID_SEARCH_QUERY, false);
                 return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
             }
@@ -98,8 +99,6 @@ public class ProductController {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-
     @PostMapping("/update-product")
     public ResponseEntity<GetProductsResponse> updateProductById(@Valid @RequestBody ProductUpdateRequest updateRequest) {
         try {
