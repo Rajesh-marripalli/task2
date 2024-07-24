@@ -12,12 +12,14 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping(produces = "application/json")
+
 public class ProductController {
 
     @Autowired
@@ -25,6 +27,7 @@ public class ProductController {
 
 
     @GetMapping("/get-products")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<GetProductsResponse> getProducts() {
         try {
             productService.fetchAndSaveProducts();
@@ -37,6 +40,7 @@ public class ProductController {
     }
 
     @PostMapping("/search-products")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<List<Product>>> searchProducts(@Valid @RequestBody SearchRequest searchRequest) {
         try {
             if (searchRequest.getQuery() == null || searchRequest.getQuery().trim().isEmpty()) {
@@ -57,6 +61,7 @@ public class ProductController {
     }
 
     @PostMapping("/search-by-category")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<List<Product>>> searchProductsByCategory(@Valid @RequestBody SearchRequest searchRequest) {
         try {
             if (searchRequest.getQuery() == null || searchRequest.getQuery().trim().isEmpty()) {
@@ -78,6 +83,7 @@ public class ProductController {
         }
     }
 @PostMapping("delete-by-category")
+@PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<GetProductsResponse> deleteProductsByCategory(@Valid @RequestBody SearchRequest searchRequest) {
         try {
             if (searchRequest.getQuery() == null || searchRequest.getQuery().trim().isEmpty()) {
@@ -100,6 +106,7 @@ public class ProductController {
         }
     }
     @PostMapping("/update-product")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<GetProductsResponse> updateProductById(@Valid @RequestBody ProductUpdateRequest updateRequest) {
         try {
             productService.updateProductById(updateRequest);

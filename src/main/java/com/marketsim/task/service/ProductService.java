@@ -10,6 +10,8 @@ import com.marketsim.task.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -55,7 +57,7 @@ public class ProductService {
         }
     }
 
-
+    @Cacheable("products")
     public List<Product> searchProducts(String query) {
         try {
             //getting the list of products
@@ -64,7 +66,7 @@ public class ProductService {
             throw new ProductServiceException(AppConstants.PRODUCTS_SEARCH_FAILURE + e.getMessage(), e);
         }
     }
-
+    @Cacheable("categories")
     public List<Product> searchProductsByCategory(String category) {
         try {
             return productRepository.findByCategorys(category);
@@ -85,6 +87,7 @@ public void deleteProductsByCategory(String category) {
         throw new ProductServiceException(AppConstants.PRODUCTS_CATEGORY_DELETE_FAILURE + e.getMessage(), e);
     }
 }*/
+@CacheEvict(value = "categories", allEntries = true)
 @Transactional
 public void deleteProductsByCategory(String category) {
     try {

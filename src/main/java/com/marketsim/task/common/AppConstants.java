@@ -18,6 +18,7 @@ public class AppConstants {
 
             public static final String PRODUCTS_CATEGORY_NOT_FOUND="PRODUCTS_NOT_FOUND";
             public static final String SAME_TITLE_AVAILABLE= "Same_title_available";
+
         }
 
 
