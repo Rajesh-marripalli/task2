@@ -23,6 +23,8 @@ public class Review {
     @JsonBackReference
     private Product product;
 
+
+
     // Getters and Setters
 }
 
